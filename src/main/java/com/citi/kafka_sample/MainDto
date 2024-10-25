@@ -1,0 +1,50 @@
+package com.citi.kafka_sample;
+
+import java.util.List;
+import java.util.Map;
+
+public class MainDto {
+    private Map<String, String> marketTradingHours;
+    private String settlementType;
+    private String bgidVal;
+    private String ricVal;
+    private String undrlyISIN;
+    private String pplUid;
+    private String firstDeliveryDt;
+    private String settlementDt;
+    private String issueDate;
+    private boolean esmaCommodityDerivative;
+    private boolean fcaCommodityDerivative;
+    private String recordStatus;
+    private String maturityDay;
+    private String firstNoticeDate;
+    private String lastDeliveryDate;
+    private String lastTradeDate;
+    private String expiryDate;
+    private String firstTradeDate;
+    private String exchListedInd;
+    private String isPotentially871m;
+    private String isQualifiedIndex;
+    private String isUSSourceIncome;
+    private CitiXrefDto citiXref;
+    private int version;
+    private ContractInformationDto contractInformation;
+    private ExchangeListingInfoDto exchangeListingInfo;
+    private IssueClassificationDto issueClassification;
+    private ProductDto product;
+    private List<ProductSmcpDto> productSMCP;
+    private List<Object> productRelations;
+    private SettlementDto settlement;
+    private XrefDto xref;
+    private DerivativeRelationsDto derivativeRelations;
+    private List<UnderlyingXrefDto> underlyingXref;
+    private CheapestToDeliverDto cheapestToDeliver;
+    private TaxInformationDto taxInformation;
+    private FCAReportingDto fcaReporting;
+    private MifidReportingDto mifidReporting;
+    private Map<String, String> equityRelations;
+    private List<Object> eligibleToDeliver;
+    private List<Object> pplUnderlying;
+
+    // Getters and Setters
+}
