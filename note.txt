@@ -1,0 +1,254 @@
+Summary: Insecurity-Driven Ego Behaviors
+Nishandhan’s actions often reveal a pattern of insecurity and a desire to assert authority, manifesting in several key behaviors:
+1.	Micromanagement and Intrusive Oversight: By intervening in tasks that team members are already managing or learning independently, Nishandhan attempts to position himself as indispensable. This need to control or "supervise" every step reflects a lack of trust in his team and a need to feel involved in all decisions.
+2.	Redundant Questioning and Withholding Key Information: His tendency to ask leading questions that build up to implied errors, or to reveal important details only after questioning, suggests an effort to maintain control over the narrative. This tactic can create a dynamic where he appears to have “corrected” team members, positioning himself as the more knowledgeable authority, even when the information was critical and should have been shared upfront.
+3.	Dismissive Responses to Inquiries: Nishandhan’s quick dismissals of questions and discouragement of deeper understanding reveal an attempt to limit scrutiny of his own decisions. By shutting down inquiries, he indirectly asserts that his knowledge is sufficient and avoids any perceived challenge to his expertise.
+4.	Invalidation of Proactive Efforts: When team members invest time in proactive research, Nishandhan often dismisses these efforts as unnecessary. This behavior likely stems from a need to control what is considered “valuable” work, asserting that only his judgment on task importance matters. It allows him to devalue others’ contributions, keeping the focus on his own oversight.
+5.	Condescending Communication Style: Through questioning and dismissive remarks, Nishandhan fosters an environment where team members may feel inadequate. This tendency to subtly undermine others reinforces his position of authority, as it implies that others lack sufficient understanding, reinforcing a dependency on his guidance.
+Underlying Motivation
+These behaviors appear driven by a combination of insecurity and ego, where Nishandhan may feel the need to assert dominance to mask self-doubt. By positioning himself as an indispensable authority and limiting open discussion, he creates a controlled environment where his knowledge and judgment are perceived as final. This approach may stem from a fear of appearing less knowledgeable, leading him to control conversations and diminish the contributions of others.
+
+Specific Issues in the following sections.
+
+
+
+Issue 1: Lack of Active Listening and Dismissive Responses
+Description
+Nishandhan exhibits a pattern of dismissing questions and deflecting conversations, which prevents effective communication and hinders knowledge-sharing within the team. When approached with questions about specific issues, he often interrupts to provide unrelated instructions, disregarding the actual needs of the team member seeking help.
+Example
+On a recent occasion, I reached out to Nishandhan for clarification on an API call and response. Instead of listening to my full question, he redirected the conversation to instructing me on how to copy and paste the response into Notepad, explaining how to read data from it. This response was unrelated to my actual question, which remained unresolved. Such deflections are not isolated but part of a recurring pattern in his communication style.
+Analysis
+This behavior suggests a lack of active listening and a need to control the direction of conversations. By deflecting to topics he chooses, he not only disregards the concerns of team members but also imposes his agenda, even when it’s unrelated. This can stem from a desire to assert control or maintain a perceived authority, but it comes at the cost of genuine engagement and understanding.
+Impact
+1.	Reduced Team Efficiency: By steering conversations away from specific issues, critical problems remain unaddressed, requiring additional time to clarify or resolve.
+2.	Lowered Morale: Feeling dismissed when asking for help discourages team members from seeking guidance, reducing motivation and trust.
+3.	Missed Learning Opportunities: His deflection prevents team members from gaining targeted support, which stifles professional growth and effective problem-solving.
+Suggested Resolution
+Encourage active listening practices within the team. This could include:
+•	Allowing team members to fully explain their issues before offering guidance.
+•	Addressing specific questions directly before introducing additional topics or instructions.
+By fostering an environment where questions are heard and addressed, we can improve both communication and productivity within the team.
+
+Issue 2: Intrusive Micromanagement and Lack of Autonomy
+Description
+During my work on setting up a Kafka consumer, I needed to learn the processes for raising a KAAS admin request and creating topics in MetaManager. While I was learning directly from a colleague, Sairam, Nishandhan intrusively intervened, directing me on each step without allowing me to understand the process independently. Despite being as unfamiliar with the process as I was, he continued to micromanage, telling me what actions to take without adding any value to the conversation.
+Example
+While Sairam was explaining the steps to raise a KAAS admin request and create topics, Nishandhan interrupted, instructing me to "check with that team" and "do that next." His presence felt intrusive, as he continued to direct each step, despite his own lack of clarity on the process. This behavior made it challenging to focus and fully understand the process from a knowledgeable peer.
+Analysis
+This behavior reflects overbearing micromanagement and an inability to respect team autonomy. By intervening unnecessarily, Nishandhan restricts independent learning and problem-solving, preventing team members from taking ownership of tasks. His actions may stem from a need to maintain control or assert authority, but they hinder effective knowledge acquisition and disrupt the natural learning flow.
+Impact
+1.	Impeded Learning: Constant interruptions make it difficult to absorb information directly from knowledgeable colleagues, disrupting focus and reducing comprehension.
+2.	Loss of Confidence: Micromanagement implies a lack of trust in team members’ abilities, which can erode confidence and discourage initiative.
+3.	Strained Collaboration: This behavior can discourage peers from offering assistance, knowing that interventions may lead to interruptions and micromanagement.
+Suggested Resolution
+Encourage respect for learning processes and delegation of autonomy by:
+•	Allowing team members to fully engage with colleagues when learning new processes, without unnecessary interruptions.
+•	Trusting team members to follow through on tasks independently and providing guidance only when necessary.
+Promoting a culture of autonomy and trust will enhance both individual confidence and team cohesion, allowing for more effective collaboration and growth.
+Issue 3: Invalidating Efforts and Lack of Recognition
+Description
+Despite spending time learning and gathering useful information that benefits the team, Nishandhan frequently dismisses my efforts as unnecessary or excessive. For example, when I dedicated my weekend to understanding Citi’s Data Catalog infrastructure and its hierarchical structure (MKTS\ICTR) to fill out the KaaS admin request accurately, Nishandhan criticized this preparation as a “waste of time.” However, this information proved crucial in successfully completing the request, yet my efforts went unacknowledged.
+Example
+I took the initiative to learn about Citi’s Data Catalog infrastructure, discovering the MKTS\ICTR structure for the ICT project. This knowledge was essential for filling out a mandatory field in the KaaS admin request, which required the catalog’s parent structure. Despite this effort benefiting the task, Nishandhan dismissed my research, advising that I was over-preparing and wasting time. Later, when I used this information to complete the task, he took the outcome without recognizing the work put into obtaining it.
+Analysis
+This behavior reflects a pattern of effort invalidation and lack of appreciation. By repeatedly dismissing preparation as excessive, Nishandhan discourages proactive learning and undervalues initiative. This tendency may stem from a need to control the narrative of what’s considered necessary, but it diminishes the motivation to go beyond basic requirements and impedes a culture of thoroughness and diligence.
+Impact
+1.	Demotivation and Frustration: Dismissing my work without acknowledgment lowers morale, making me feel that my contributions are undervalued and unappreciated.
+2.	Reduced Initiative: When proactive learning is dismissed as unnecessary, it discourages team members from taking initiative, limiting opportunities for independent problem-solving.
+3.	Missed Value-Added Insights: Proactive research often uncovers insights that benefit the team. By invalidating these efforts, Nishandhan potentially misses out on valuable contributions that could enhance the project.
+Suggested Resolution
+Foster a culture of recognition and constructive feedback by:
+•	Acknowledging proactive efforts and considering their value before dismissing them.
+•	Encouraging thorough preparation and viewing proactive learning as an asset rather than an inefficiency.
+Recognizing individual contributions and valuing thoroughness will enhance motivation and demonstrate respect for team members’ initiative, ultimately benefiting the project and team morale.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Issue 4: Lack of Coordination and Ego-Driven Behavior
+Description
+When tasks require follow-up or coordination with external teams, Nishandhan often bypasses internal communication, opting instead to directly contact external teams without consulting me, even when I’m managing the task. For instance, after he raised the ISG Cloud subscription and received the subscription ID, he delegated the follow-up to me. However, when an issue arose regarding blank matching criteria, he bypassed me and directly reached out to the ISG Cloud team, which disrupted our team’s internal coordination and gave an impression of disorganization.
+Example
+After Nishandhan raised the ISG Cloud subscription and received the subscription ID, he delegated the task to me to manage any follow-up. I learned through ISG Cloud Confluence that tenants have access to APIs for updating subscription configurations, including matching criteria. When an email indicated that the matching criteria was blank, I asked Nishandhan if he had a JSON for the matching criteria that could be used for the API. Instead of coordinating with me, he bypassed our team communication and directly asked the ISG Cloud team if this could be sent via email, undermining my role in the task.
+Analysis
+This behavior suggests ego-driven actions and a lack of respect for internal team roles. Rather than collaborating or supporting team members’ independence, Nishandhan’s tendency to bypass internal coordination shows a lack of trust and a need to control external interactions himself. This behavior disrupts workflow and creates an impression of poor coordination, possibly to reinforce his own visibility with external teams at the expense of team cohesion.
+Impact
+1.	Reduced Team Cohesion: Bypassing internal team communication weakens trust and undermines our ability to work as a cohesive unit, damaging our internal dynamics.
+2.	Missed Learning and Ownership Opportunities: By bypassing my involvement, Nishandhan prevents me from fully managing the task, reducing my ownership and limiting learning opportunities.
+3.	Damaged Team Reputation: External teams may perceive our team as disorganized due to inconsistent communication, potentially undermining trust and confidence in our capabilities.
+Suggested Resolution
+Improve coordination and respect for team roles by:
+•	Ensuring internal discussions are prioritized before reaching out to external teams.
+•	Supporting team members in managing their tasks independently and providing guidance only when needed, rather than overtaking responsibilities.
+Promoting respect for internal coordination will enhance team cohesion and foster a more supportive and collaborative work environment.
+
+Issue 5: Discouraging Inquiry and Stifling Understanding
+Description
+Nishandhan often discourages inquiries into the reasoning behind design and architectural decisions, dismissing questions that seek to clarify the rationale behind our system’s setup. For instance, when I asked about the reasoning behind a specific message-handling design in Citi’s system, he dismissed my question, saying that “no one will know the answer” and attributing it to decisions made long ago. This response discouraged me from understanding the architecture, which is crucial for effectively working with the system.
+Example
+I questioned the rationale behind the handling of file and Kafka message content within Citi’s system, seeking to understand if they were meant to match or serve different purposes. Nishandhan quickly dismissed my question, stating that “no one will know the answer” and attributing it to historical design decisions within the global system. Later, when I consulted Suriya, the Business Analyst, I confirmed that the file and Kafka message content were indeed different, aligning with my initial suspicion and revealing an important detail for downstream processing.
+Analysis
+This behavior shows a lack of openness to inquiry and a dismissive attitude towards knowledge-seeking. By discouraging questions and dismissing deeper inquiries, Nishandhan prevents team members from gaining a full understanding of the system. This approach may stem from a desire to avoid discussions he perceives as unnecessary or time-consuming, but it stifles curiosity and prevents the team from fully engaging with complex concepts.
+Impact
+1.	Hindered Knowledge Development: Discouraging questions limits team members’ understanding of the system, reducing their ability to troubleshoot or optimize effectively.
+2.	Reduced Initiative and Innovation: When questions are discouraged, it creates a culture where team members may hesitate to explore improvements or challenge assumptions, stifling innovation.
+3.	Lowered Morale: Repeated dismissal of questions signals that deeper understanding isn’t valued, leading to disengagement among those who want to learn and grow.
+Suggested Resolution
+Foster a culture of open inquiry and constructive discussion by:
+•	Encouraging team members to ask questions and actively seeking to provide clear, thoughtful answers.
+•	Recognizing that understanding the rationale behind decisions contributes to better problem-solving and system optimization.
+By supporting curiosity and understanding, we can create an environment where team members feel empowered to explore, learn, and contribute meaningfully to the project.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Issue 6: Redundant Questioning and Withholding Key Information
+Description
+Nishandhan frequently asks redundant or unnecessary questions, often implying that I’ve misunderstood my tasks, even when the requirements are clear. This questioning style often builds up to a point where he reveals critical information that should have been provided upfront, making it seem as though I was at fault for not knowing. For example, when I was creating three Kafka topics for SMC contract, SMC product, and AMC, he questioned why I needed three channels and if it was for testing, despite everyone being aware of my task. Only after a series of questions did he inform me that contract and product would be on the same topic.
+Example
+While I was working on creating three Kafka topics for SMC contract, SMC product, and AMC, Nishandhan asked a series of questions implying that creating three channels was unnecessary, even asking if it was solely for testing. This line of questioning eventually led him to inform me that contract and product would actually be on the same topic, a critical piece of information that would have significantly impacted my setup if provided earlier. Instead, his questioning made it seem as if I’d made an error by following the task as originally outlined.
+Analysis
+This behavior reflects a habit of redundant questioning with delayed clarification, which can be interpreted as a form of undermining. By withholding key information until after questioning my approach, Nishandhan creates a dynamic where he implies mistakes without giving the full context upfront. This approach may stem from a desire to assert control or create a dependency on his input, but it undermines confidence and efficiency.
+Impact
+1.	Wasted Time and Effort: Redundant questioning without providing essential details from the start leads to wasted time and effort, as tasks need to be revisited once the missing information is eventually revealed.
+2.	Lowered Confidence: When questions are framed as though I’ve made a mistake, it creates self-doubt, making me second-guess my work even when following instructions correctly.
+3.	Reduced Transparency and Trust: Withholding key information until it’s convenient to reveal it shows a lack of transparency, which can damage trust and make team members feel unsupported.
+Suggested Resolution
+Encourage clear and upfront communication by:
+•	Providing all known critical information at the beginning of a task to prevent unnecessary questioning and rework.
+•	Ensuring that questions are constructive and aimed at enhancing understanding rather than implying fault.
+Transparent communication and constructive feedback will improve both team efficiency and morale, allowing team members to work with confidence and clarity.
+Issue 7: Condescending Questioning Style That Undermines Confidence
+Description
+Nishandhan often asks questions in a way that builds up to a point where I’m made to feel inadequate or "stupid." Instead of providing guidance directly, he often asks a series of questions that imply I am mistaken, even when I am following the correct approach. This questioning style creates an environment where I feel scrutinized rather than supported.
+Example
+For example, when I was setting up Kafka topics, Nishandhan began questioning why I was creating multiple channels and asked if it was only for testing. These questions implied that I had misunderstood the task, even though I was following the instructions as given. After a series of questions, he finally mentioned that contract and product would share the same topic. This key information should have been provided upfront, rather than making me feel as though I had erred by proceeding with the task as initially understood.
+Analysis
+This behavior demonstrates a condescending questioning style intended to imply fault rather than foster understanding. By framing questions in a way that suggests I am mistaken, Nishandhan’s approach diminishes confidence and creates a negative learning environment. This style may stem from a need to reinforce his authority, but it comes at the cost of constructive dialogue and team morale.
+Impact
+1.	Erosion of Confidence: Constantly feeling as though I am being scrutinized or undermined erodes my confidence, making me second-guess my actions even when following instructions correctly.
+2.	Lowered Morale: Being questioned in a condescending manner discourages open communication and creates a work environment where I feel judged instead of supported.
+3.	Discouraged Curiosity: This questioning style discourages me from asking questions or seeking clarification, fearing that my inquiries may be met with further scrutiny or condescension.
+Suggested Resolution
+Promote a supportive and constructive questioning approach by:
+•	Encouraging questions and feedback to be framed positively and focused on clarifying tasks rather than implying mistakes.
+•	Providing direct guidance and essential information upfront, creating a more collaborative and confidence-boosting environment.
+By fostering a culture of constructive and respectful communication, team members can feel empowered to ask questions and contribute without fear of judgment or condescension.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Issue 8: Inconsistent and Poorly Communicated Requirements
+Description
+Nishandhan has demonstrated a lack of transparency regarding important requirement changes, often withholding information that significantly affects task implementation until late in the process. For example, I was not informed until much later that contract and product messages would be sent through the same Kafka topic, a detail that impacts the design and setup of the system. When I asked about the timing of his awareness of this information, he mentioned that requirements were unclear and that business discussions were ongoing, yet he hadn’t communicated this earlier, leaving me to proceed with incorrect assumptions.
+Example
+While working on Kafka topics for SMC contract and product, I was initially under the impression that each would require its own topic. After completing most of the setup, Nishandhan finally mentioned that both messages would be handled by the same topic, citing ongoing business discussions as the reason for the late update. This lack of upfront communication disrupted my work and required adjustments to the initial setup, which could have been avoided with timely information.
+Analysis
+This behavior highlights inconsistent communication of requirements and a lack of proactive updates. By withholding critical information until later, Nishandhan creates an environment where team members operate under outdated assumptions, leading to rework and inefficiencies. This may stem from a lack of attention to detail or an oversight in understanding the importance of communicating requirement changes promptly.
+Impact
+1.	Increased Rework and Delays: Without timely updates, work is often based on incorrect assumptions, leading to rework that delays project progress and decreases efficiency.
+2.	Frustration and Disengagement: Operating under outdated or incomplete information is frustrating, creating a sense of disorganization and reducing motivation.
+3.	Reduced Trust in Leadership: When requirements are communicated inconsistently, it erodes trust in leadership’s ability to provide the necessary support for team members to complete tasks effectively.
+Suggested Resolution
+Encourage consistent and proactive communication of requirements by:
+•	Providing timely updates on requirement changes as soon as they become known, especially when they impact ongoing work.
+•	Creating a process for regularly checking in on and communicating requirement changes to ensure alignment across the team.
+Clear and consistent communication will help prevent misunderstandings and minimize rework, allowing team members to proceed with tasks confidently and effectively.
+
+Issue 9: Lack of Recognition for Proactive Problem-Solving
+Description
+When I take initiative to solve problems proactively or research complex topics to improve task outcomes, Nishandhan frequently fails to acknowledge these efforts, often dismissing them as unnecessary. This lack of recognition not only undermines my contributions but also discourages proactive problem-solving. For instance, after I spent time learning about the Data Catalog infrastructure to correctly fill out the KaaS admin request, Nishandhan disregarded my research as excessive, despite it directly benefiting our task completion.
+Example
+To ensure accurate completion of the KaaS admin request, I spent my weekend researching Citi’s Data Catalog infrastructure, discovering the MKTS\ICTR structure for the ICT project. This information was essential in completing the request’s mandatory fields. However, Nishandhan dismissed my efforts as "over-preparing" and "a waste of time," despite utilizing the very information I gathered to successfully submit the request. This pattern of dismissing proactive work without acknowledgment is ongoing and discouraging.
+Analysis
+This behavior reflects a lack of appreciation for proactive work and failure to recognize individual contributions. By consistently downplaying or dismissing proactive efforts, Nishandhan discourages initiative and devalues the extra work put into achieving team goals. This approach may stem from an attempt to control the narrative of what constitutes “necessary” work, but it creates a culture where team members feel their extra efforts are unappreciated.
+Impact
+1.	Reduced Motivation to Take Initiative: Repeated dismissal of proactive problem-solving discourages team members from going beyond minimal requirements, as their contributions feel undervalued.
+2.	Lowered Morale: When extra efforts go unrecognized, it impacts morale, making team members feel their work is underappreciated, which affects engagement and enthusiasm.
+3.	Missed Opportunities for Improvement: Dismissing proactive research and problem-solving prevents the team from benefiting fully from valuable insights that could enhance overall project outcomes.
+Suggested Resolution
+Foster a culture of acknowledgment and positive reinforcement by:
+•	Recognizing and appreciating proactive efforts, especially when they lead to improved task outcomes or prevent potential issues.
+•	Encouraging team members to take initiative by valuing and rewarding their contributions.
+By cultivating a supportive environment where proactive work is encouraged and acknowledged, team morale and motivation will improve, contributing to higher-quality results.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Issue 10: Dismissive and Condescending Response to Team Members’ Questions
+Description
+When team members, including myself, seek clarification or ask questions to understand the rationale behind certain decisions, Nishandhan frequently responds in a dismissive or condescending manner, discouraging open dialogue. For example, when I inquired about the reasoning behind a specific message-handling design decision in Citi’s system, he dismissed the question by saying, “no one will know the answer” and attributed it to historical design choices. This response discouraged further exploration, despite the importance of understanding system architecture for effective development.
+Example
+I sought clarity on the handling of file and Kafka message content within the system to determine whether they were expected to match for downstream processing. Instead of engaging with the question, Nishandhan dismissed it outright, saying “no one will know the answer,” suggesting that this was simply the way things were set up. This response not only limited my understanding but discouraged further questions. Later, with assistance from Suriya, the Business Analyst, I learned that the file and message content were intentionally different, confirming my initial suspicion and highlighting the importance of asking such questions.
+Analysis
+This behavior reflects a dismissive approach to team inquiries and a tendency to discourage deeper understanding. By dismissing questions in a condescending manner, Nishandhan limits the team’s ability to gain valuable insights into system design, reducing their potential for effective problem-solving. Such behavior may stem from a desire to avoid “unnecessary” discussions, but it ultimately stifles curiosity and the opportunity for shared understanding.
+Impact
+1.	Hindered Learning and Growth: Dismissing inquiries discourages team members from seeking to understand system architecture, reducing their ability to troubleshoot effectively.
+2.	Lowered Morale and Engagement: A dismissive tone reduces team members’ motivation to ask questions, leading to disengagement and a lack of open communication.
+3.	Reduced Team Knowledge Sharing: When questions are dismissed, it prevents team members from gaining essential knowledge, reducing the collective expertise within the team.
+Suggested Resolution
+Promote an open and respectful environment for questions by:
+•	Encouraging questions and providing constructive responses that foster understanding and knowledge-sharing.
+•	Recognizing that understanding the rationale behind design decisions is essential for effective work and can prevent potential issues.
+By encouraging open inquiry and engaging constructively with team members’ questions, the team can build stronger collective expertise and create a more supportive work environment.
+
