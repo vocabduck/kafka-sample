@@ -4,7 +4,7 @@
 AUTH_URL="https://referencedatacloudauth.sit.icg.citigroup.net/auth/token?grant_type=password"
 DOWNLOAD_URL="https://sit.referencecatalog.snapshots.icg.citigroup.net/snapshots/datastandards/globalorganizationcode/FullDump/latest"
 
-# Credentials (update these if needed)
+# Credentials
 USERNAME="ictr_179819"
 PASSWORD="ictr_179819"
 AUTH_HEADER="Basic Y2xvdWQtYXBpOg=="  # Update if needed
@@ -15,8 +15,17 @@ TOKEN_RESPONSE=$(curl -s -X POST "$AUTH_URL" \
     --data "username=$USERNAME&password=$PASSWORD" \
     --header "Authorization: $AUTH_HEADER")
 
-# Extract token without jq (using grep & cut)
-ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
+# Debugging: Print Raw Response
+echo "Raw Token Response: $TOKEN_RESPONSE"
+
+# Check if response is empty
+if [[ -z "$TOKEN_RESPONSE" ]]; then
+    echo "Error: No response from authentication server."
+    exit 1
+fi
+
+# Extract token using sed
+ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p')
 
 # Check if token was received
 if [[ -z "$ACCESS_TOKEN" || "$ACCESS_TOKEN" == "null" ]]; then
@@ -24,7 +33,7 @@ if [[ -z "$ACCESS_TOKEN" || "$ACCESS_TOKEN" == "null" ]]; then
     exit 1
 fi
 
-echo "Token fetched successfully."
+echo "Token fetched successfully: $ACCESS_TOKEN"
 
 # Set output filenames
 OUTPUT_FILE="globalorganizationcode-latest.gz"
