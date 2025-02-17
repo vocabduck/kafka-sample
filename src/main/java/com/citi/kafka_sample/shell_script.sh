@@ -1,60 +1,44 @@
 #!/bin/bash
 
-# Set API endpoints
-AUTH_API_URL="https://auth.example.com/token"  # Replace with your token API
-DOWNLOAD_API_URL="https://sit.referencecatalog.snapshots.icg.citigroup.net/snapshots/datastandards/globalorganizationcode/FullDump/latest"
+# Step 1: Authenticate and Retrieve Bearer Token
+AUTH_RESPONSE=$(curl -s --data "username=ictr_179819&password=ictr_179819" \
+                      --header "Authorization: Basic Y2xvdWQtYXBpOg==" \
+                      -X POST "https://referencedatacloudauth.sit.icg.citigroup.net/auth/token?grant_type=password")
 
-# Client credentials (if needed)
-CLIENT_ID="your_client_id"
-CLIENT_SECRET="your_client_secret"
-USERNAME="your_username"
-PASSWORD="your_password"
+# Extract the access token from JSON response
+ACCESS_TOKEN=$(echo "$AUTH_RESPONSE" | grep -o '"access_token":"[^"]*' | cut -d':' -f2 | tr -d '"')
 
-# Step 1: Fetch Access Token
-echo "Fetching access token..."
-TOKEN_RESPONSE=$(curl -s -X POST "$AUTH_API_URL" \
-    -H "Content-Type: application/json" \
-    -d '{"client_id": "'"$CLIENT_ID"'", "client_secret": "'"$CLIENT_SECRET"'", "username": "'"$USERNAME"'", "password": "'"$PASSWORD"'", "grant_type": "password"}')
-
-# Extract the token from the JSON response
-ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r '.access_token')
-
-# Validate if token was retrieved
-if [[ -z "$ACCESS_TOKEN" || "$ACCESS_TOKEN" == "null" ]]; then
-    echo "Error: Failed to fetch access token"
+# Check if access token is empty
+if [[ -z "$ACCESS_TOKEN" ]]; then
+    echo "Error: Authentication failed. Unable to retrieve token."
     exit 1
 fi
 
-echo "Access token retrieved successfully."
+echo "Authentication successful. Token retrieved."
 
-# Step 2: Fetch Latest Snapshot Metadata
-echo "Fetching latest snapshot metadata..."
-RESPONSE_FILE="response.json"
-curl -s -H "Authorization: Bearer $ACCESS_TOKEN" "$DOWNLOAD_API_URL" -o $RESPONSE_FILE
+# Step 2: Get Latest Snapshot File Info
+FILE_INFO=$(curl -s -H "Authorization: Bearer $ACCESS_TOKEN" \
+                   -X GET "https://sit.referencecatalog.snapshots.icg.citigroup.net/snapshots/datastandards/globalorganizationcode/FullDump/latest")
 
-# Extract the latest file name from JSON
-LATEST_FILE=$(jq -r '.results[0].name' < $RESPONSE_FILE)
+# Extract filename from JSON response
+FILENAME=$(echo "$FILE_INFO" | grep -o '"name":"[^"]*' | cut -d':' -f2 | tr -d '"')
 
-if [[ -z "$LATEST_FILE" || "$LATEST_FILE" == "null" ]]; then
-    echo "Error: Could not extract the file name."
+# Check if filename is empty
+if [[ -z "$FILENAME" ]]; then
+    echo "Error: Unable to retrieve filename from API response."
     exit 1
 fi
 
-echo "Latest file: $LATEST_FILE"
+echo "Latest file found: $FILENAME"
 
-# Step 3: Construct the full download URL
-FILE_DOWNLOAD_URL="https://sit.referencecatalog.snapshots.icg.citigroup.net/snapshots/data/organizationcode/fd/$LATEST_FILE"
+# Step 3: Download the File
+DOWNLOAD_URL="https://sit.referencecatalog.snapshots.icg.citigroup.net/snapshots/data/organizationcode/fd/$FILENAME"
+curl -o "$FILENAME" -H "Authorization: Bearer $ACCESS_TOKEN" -X GET "$DOWNLOAD_URL"
 
-# Step 4: Download the file
-if command -v aria2c &> /dev/null; then
-    echo "Using aria2c for faster downloads..."
-    aria2c -x 10 -s 10 -o "$LATEST_FILE" -H "Authorization: Bearer $ACCESS_TOKEN" "$FILE_DOWNLOAD_URL"
+# Check if download was successful
+if [[ $? -eq 0 ]]; then
+    echo "Download completed: $FILENAME"
 else
-    echo "Using curl..."
-    curl -o "$LATEST_FILE" -H "Authorization: Bearer $ACCESS_TOKEN" "$FILE_DOWNLOAD_URL"
+    echo "Error: File download failed."
+    exit 1
 fi
-
-# Cleanup
-rm -f $RESPONSE_FILE
-
-echo "Download complete: $LATEST_FILE"
