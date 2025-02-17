@@ -13,7 +13,7 @@ AUTH_HEADER="Basic Y2xvdWQtYXBpOg=="  # Update if needed
 echo "Fetching authentication token..."
 TOKEN_RESPONSE=$(curl -s -X POST "$AUTH_URL" \
     --data "username=$USERNAME&password=$PASSWORD" \
-    --header "Authorization: $AUTH_HEADER")
+    --header "Authorization: $AUTH_HEADER" | tr -d '\n' | tr -d ' ')
 
 # Debugging: Print Raw Response
 echo "Raw Token Response: $TOKEN_RESPONSE"
@@ -24,8 +24,8 @@ if [[ -z "$TOKEN_RESPONSE" ]]; then
     exit 1
 fi
 
-# Extract token using sed
-ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p')
+# Extract token using awk (instead of grep or sed)
+ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | awk -F'"' '{for(i=1;i<=NF;i++){if($i=="access_token"){print $(i+2)}}}')
 
 # Check if token was received
 if [[ -z "$ACCESS_TOKEN" || "$ACCESS_TOKEN" == "null" ]]; then
