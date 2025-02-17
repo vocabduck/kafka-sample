@@ -15,8 +15,8 @@ TOKEN_RESPONSE=$(curl -s -X POST "$AUTH_URL" \
     --data "username=$USERNAME&password=$PASSWORD" \
     --header "Authorization: $AUTH_HEADER")
 
-# Extract token using jq (ensure jq is installed)
-ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r '.access_token')
+# Extract token without jq (using grep & cut)
+ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
 
 # Check if token was received
 if [[ -z "$ACCESS_TOKEN" || "$ACCESS_TOKEN" == "null" ]]; then
