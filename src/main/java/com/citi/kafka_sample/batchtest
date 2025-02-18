@@ -1,0 +1,66 @@
+@SpringBatchTest
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class YourBatchJobTest {
+
+    @Autowired
+    private JobLauncherTestUtils jobLauncherTestUtils;
+
+    @Autowired
+    private JobRepositoryTestUtils jobRepositoryTestUtils;
+
+    @Autowired
+    private Job yourBatchJob; // Replace with your actual job bean name
+
+    @MockBean
+    private ItemReader<String> mockReader;
+
+    @MockBean
+    private ItemProcessor<String, String> mockProcessor;
+
+    @MockBean
+    private ItemWriter<String> mockWriter;
+
+    @BeforeEach
+    void setup() {
+        jobRepositoryTestUtils.removeJobExecutions(); // Clean up previous test runs
+    }
+
+    @Test
+    void testFullJobExecution() throws Exception {
+        // Mock reader behavior (return values one by one)
+        when(mockReader.read()).thenReturn("record1", "record2", "record3", null);
+
+        // Mock processor (transformation logic)
+        when(mockProcessor.process(any())).thenAnswer(invocation -> 
+            ((String) invocation.getArgument(0)).toUpperCase()
+        );
+
+        // Run the batch job
+        JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+
+        // Validate job execution status
+        assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+
+        // Validate step execution
+        StepExecution stepExecution = jobExecution.getStepExecutions().iterator().next();
+        assertEquals(BatchStatus.COMPLETED, stepExecution.getStatus());
+        assertEquals(3, stepExecution.getReadCount());  // Expecting 3 records
+    }
+
+    @Test
+    void testStepExecution() throws Exception {
+        // Mocking input for reader and processor
+        when(mockReader.read()).thenReturn("record1", "record2", "record3", null);
+        when(mockProcessor.process(any())).thenReturn("PROCESSED1", "PROCESSED2", "PROCESSED3");
+
+        // Run a specific step instead of the full job
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep("yourStepName"); // Replace with actual step name
+
+        assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+
+        StepExecution stepExecution = jobExecution.getStepExecutions().iterator().next();
+        assertEquals(3, stepExecution.getReadCount()); // Verify records processed
+        assertEquals(3, stepExecution.getWriteCount());
+    }
+}
