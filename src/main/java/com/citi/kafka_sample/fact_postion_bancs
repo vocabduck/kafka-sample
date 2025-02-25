@@ -1,0 +1,197 @@
+package com.example.model;
+
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "bancs_fact_position")
+public class BancsFactPosition {
+
+    @Id
+    @Column(name = "POSITION_ID", length = 64, nullable = false)
+    private String positionId;
+
+    @Column(name = "POSITION_ID_VERSION", length = 16)
+    private String positionIdVersion;
+
+    @Column(name = "PREVIOUS_POSITION_ID", length = 64)
+    private String previousPositionId;
+
+    @Column(name = "POSITION_PRICING_SYSTEM", length = 32)
+    private String positionPricingSystem;
+
+    @Column(name = "PRODUCT_ID_TYPE", length = 8)
+    private String productIdType;
+
+    @Column(name = "BUSINESS_DATE")
+    private LocalDate businessDate;
+
+    @Column(name = "FLOW_TYPE", length = 64)
+    private String flowType;
+
+    @Column(name = "UPDATED_DATE")
+    private LocalDateTime updatedDate;
+
+    @Column(name = "GOLD_CONTRACT_ID", length = 64)
+    private String goldContractId;
+
+    @Column(name = "SECURITY_IDENTIFIER_TYPE", length = 8)
+    private String securityIdentifierType;
+
+    @Column(name = "SECURITY_IDENTIFIER", precision = 38, scale = 15)
+    private BigDecimal securityIdentifier;
+
+    @Column(name = "STRIKE_PRICE", precision = 38, scale = 15)
+    private BigDecimal strikePrice;
+
+    @Column(name = "UNDERLYING_PRODUCT_ID", length = 64)
+    private String underlyingProductId;
+
+    @Column(name = "UNDERLYING_PRODUCT_ID_TYPE", length = 8)
+    private String underlyingProductIdType;
+
+    @Column(name = "EXCHANGE_CODE", length = 32)
+    private String exchangeCode;
+
+    @Column(name = "SYSTEM_FIRM_ACTI")
+    private Integer systemFirmActi;
+
+    @Column(name = "GOLD_ACCOUNT_ID")
+    private Integer goldAccountId;
+
+    @Column(name = "FIRM_ACCOUNT", length = 100)
+    private String firmAccount;
+
+    @Column(name = "SYSTEM_FIRM_GFC_ID", length = 10)
+    private String systemFirmGfcId;
+
+    @Column(name = "COUNTRY")
+    private String country;
+
+    @Column(name = "HOUSE_CLIENT_IND")
+    private String houseClientInd;
+
+    @Column(name = "REGION", length = 50)
+    private String region;
+
+    @Column(name = "POSITION_ID_VERSION_FROM_UNITY")
+    private Long positionIdVersionFromUnity;
+
+    @Column(name = "POSITION_RISK_SYSTEM", length = 20)
+    private String positionRiskSystem;
+
+    @Column(name = "POSITION_ID_FROM_UNITY")
+    private String positionIdFromUnity;
+
+    @Column(name = "CURRENT_MARKET_TO_MARKET_AMOUNT", precision = 38, scale = 15)
+    private BigDecimal currentMarketToMarketAmount;
+
+    @Column(name = "CURRENT_MARKET_TO_MARKET_CURRENCY_CODE")
+    private String currentMarketToMarketCurrencyCode;
+
+    @Column(name = "SECURITY_QUANTITY", precision = 38, scale = 15)
+    private BigDecimal securityQuantity;
+
+    @Column(name = "BUY_QUANTITY_TODAY", precision = 38, scale = 15)
+    private BigDecimal buyQuantityToday;
+
+    @Column(name = "SELL_QUANTITY_TODAY", precision = 38, scale = 15)
+    private BigDecimal sellQuantityToday;
+
+    @Column(name = "SOD_POSITION_QUANTITY", precision = 38, scale = 15)
+    private BigDecimal sodPositionQuantity;
+
+    @Column(name = "SETTLEMENT_PRICE_USD", precision = 38, scale = 15)
+    private BigDecimal settlementPriceUsd;
+
+    @Column(name = "SETTLEMENT_PRICE", length = 64)
+    private String settlementPrice;
+
+    @Column(name = "BASE_CURRENCY_CODE", length = 10)
+    private String baseCurrencyCode;
+
+    @Column(name = "POSITION_TYPE", length = 2)
+    private String positionType;
+
+    @Column(name = "PRODUCT_CAT_CD")
+    private String productCatCd;
+
+    @Column(name = "CONTRACT_DESCRIPTION")
+    private String contractDescription;
+
+    @Column(name = "CONTRACT_SIZE", precision = 38, scale = 15)
+    private BigDecimal contractSize;
+
+    @Column(name = "CALL_PUT", length = 1)
+    private String callPut;
+
+    @Column(name = "SOURCE_CODE", length = 32)
+    private String sourceCode;
+
+    @Column(name = "INIT_SYSTEM_REFERENCE_ID")
+    private Integer initSystemReferenceId;
+
+    @Column(name = "MATURITY_YEAR")
+    private String maturityYear;
+
+    @Column(name = "MATURITY_MONTH")
+    private String maturityMonth;
+
+    @Column(name = "MATURITY_DAY")
+    private String maturityDay;
+
+    @Column(name = "EXPIRY_DATE")
+    private LocalDate expiryDate;
+
+    @Column(name = "SETTLEMENT_DATE")
+    private Long settlementDate;
+
+    @Column(name = "ESP_LEAF_LEVEL_CODE")
+    private Integer espLeafLevelCode;
+
+    @Column(name = "PPL_UNDERLYING_ID")
+    private Integer pplUnderlyingId;
+
+    @Column(name = "DAY_FUT_EXP_QTY", precision = 38, scale = 15)
+    private BigDecimal dayFutExpQty;
+
+    @Column(name = "UNDERLYING_SECURITY_CLOSING_PRICE_USD", precision = 38, scale = 15)
+    private BigDecimal underlyingSecurityClosingPriceUsd;
+
+    @Column(name = "DAY_EXERCISED_QTY", precision = 38, scale = 15)
+    private BigDecimal dayExercisedQty;
+
+    @Column(name = "DAY_ASSIGNED_QTY", precision = 38, scale = 15)
+    private BigDecimal dayAssignedQty;
+
+    @Column(name = "DAY_WORTHLESS_EXP_QTY", precision = 38, scale = 15)
+    private BigDecimal dayWorthlessExpQty;
+
+    @Column(name = "DAY_MTM", precision = 38, scale = 15)
+    private BigDecimal dayMtm;
+
+    @Column(name = "DAY_EX_AS_PNL", precision = 38, scale = 15)
+    private BigDecimal dayExAsPnl;
+
+    @Column(name = "DAY_BUY_VALUE", precision = 38, scale = 15)
+    private BigDecimal dayBuyValue;
+
+    @Column(name = "DAY_SELL_VALUE", precision = 38, scale = 15)
+    private BigDecimal daySellValue;
+
+    @Column(name = "EVENT_TYPE", length = 64)
+    private String eventType;
+
+    @Column(name = "EVENT_DESCRIPTION", length = 64)
+    private String eventDescription;
+
+    @Column(name = "IST_FEE", length = 64)
+    private String istFee;
+
+    @Column(name = "USD_FX_RATE", length = 64)
+    private String usdFxRate;
+
+    // Getters and Setters
+}
