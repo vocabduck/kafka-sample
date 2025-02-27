@@ -1,0 +1,34 @@
+ALTER TABLE Position_tb 
+ADD (
+    POSITION_ID_VERSION          VARCHAR(16),
+    POSITION_PRICING_SYSTEM      VARCHAR(32),
+    FLOW_TYPE                    VARCHAR(64),
+    UPDATED_DATE                 TIMESTAMP,
+    UNDERLYING_PRODUCT_ID        VARCHAR(64),
+    UNDERLYING_PRODUCT_ID_TYPE   VARCHAR(8),
+    SYSTEM_FIRM_ACTI             INTEGER,
+    GOLD_ACCOUNT_ID              INTEGER,
+    POSITION_ID_VERSION_FROM_UNITY BIGINT,
+    POSITION_RISK_SYSTEM         VARCHAR(20),
+    POSITION_ID_FROM_UNITY       VARCHAR(20),
+    BUY_QUANTITY_TODAY           DECIMAL(38,15),
+    SELL_QUANTITY_TODAY          DECIMAL(38,15),
+    SOD_POSITION_QUANTITY        DECIMAL(38,15),
+    POSITION_TYPE                VARCHAR(2),
+    PRODUCT_CAT_CD               VARCHAR(255), -- Adjusted, since "String" type is unclear in SQL
+    CALL_PUT                     CHARACTER VARYING(1),
+    SOURCE_CODE                  CHARACTER VARYING(32),
+    INIT_SYSTEM_REFERENCE_ID     INTEGER,
+    MATURITY_YEAR                VARCHAR(255), -- Adjusted "String" to VARCHAR
+    MATURITY_MONTH               VARCHAR(255), 
+    MATURITY_DAY                 VARCHAR(255),
+    DAY_FUT_EXP_QTY              DECIMAL(38,15),
+    UNDERLYING_SECURITY_CLOSING_PRICE_USD DECIMAL(38,15),
+    DAY_EXERCISED_QTY            DECIMAL(38,15),
+    DAY_ASSIGNED_QTY             DECIMAL(38,15),
+    DAY_WORTHLESS_EXP_QTY        DECIMAL(38,15),
+    DAY_MTM                      DECIMAL(38,15),
+    DAY_EX_AS_PNL                DECIMAL(38,15),
+    DAY_BUY_VALUE                DECIMAL(38,15),
+    DAY_SELL_VALUE               DECIMAL(38,15)
+);
