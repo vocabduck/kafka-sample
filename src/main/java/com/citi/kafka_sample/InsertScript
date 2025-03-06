@@ -1,0 +1,13 @@
+BEGIN
+    FOR i IN 1..10000 LOOP
+        INSERT INTO ICTSCHEMA.TESTJDBCSOURCE ("ID", "NAME", "CREATED_AT", "STATUS")
+        VALUES (
+            i, 
+            'Sample Name ' || i, 
+            TO_TIMESTAMP('01-FEB-25 12:00:00', 'DD-MON-RR HH24:MI:SS') + (i / 1440), 
+            CASE WHEN MOD(i, 2) = 0 THEN 'Y' ELSE 'N' END
+        );
+    END LOOP;
+    COMMIT;
+END;
+/
