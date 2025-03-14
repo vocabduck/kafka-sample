@@ -1,40 +1,19 @@
-############################
-# Stage 1 - Build the application
-############################
-FROM docker-enterprise-prod.artifactrepository.citigroup.net/developersvcs-java/maven-jdk-rhel8/17e64:latest AS build
+# Use a Maven + JDK 17 image as the base
+FROM docker-enterprise-prod.artifactrepository.citigroup.net/developersvcs-java/maven-jdk-rhel8/17e64:latest
 
-WORKDIR /build
-
-# Copy Maven project files (for dependency resolution first)
-COPY pom.xml .
-COPY src ./src
-
-# Optional: if config/feature files are needed for build-time tests, copy here too
-COPY config ./config
-COPY feature ./feature
-
-# Run Maven build
-RUN mvn clean package -DskipTests
-
-# Copy dependencies into target/libs folder
-RUN mvn dependency:copy-dependencies -DoutputDirectory=target/libs
-
-############################
-# Stage 2 - Runtime image
-############################
-FROM docker-enterprise-prod.artifactrepository.citigroup.net/developersvcs-java/oracle-jdk-rhel8/17e64:latest
-
+# Set working directory inside the container
 WORKDIR /opt/fast-regression
 
-# Copy the built app and dependencies from the previous stage
-COPY --from=build /build/target /opt/fast-regression/target
+# Copy everything from your Git repo into the container
+COPY . .
 
-# Copy runtime config files (if your app loads them at runtime)
-COPY config /opt/fast-regression/config
-COPY feature /opt/fast-regression/feature
+# Run Maven build and copy dependencies to target/libs
+RUN mvn clean package -DskipTests && \
+    mvn dependency:copy-dependencies -DoutputDirectory=target/libs
 
-# Permissions (optional)
+# Optional: give permissions if required by your cluster setup
 RUN chmod -R 777 /opt/fast-regression
 
-# Command to run the app
+# Command to run your Java app
 CMD java -cp "target/libs/*:target/classes" fast.common.run.Executor
+
