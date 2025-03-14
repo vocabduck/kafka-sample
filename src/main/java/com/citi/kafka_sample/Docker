@@ -1,19 +1,20 @@
-# Use a Maven + JDK 17 image as the base
-FROM docker-enterprise-prod.artifactrepository.citigroup.net/developersvcs-java/maven-jdk-rhel8/17e64:latest
+# Use a JDK 17 runtime base image from your internal registry
+FROM docker-enterprise-prod.artifactrepository.citigroup.net/developersvcs-java/oracle-jdk-rhel8/17e64:latest
 
-# Set working directory inside the container
+# Create working directory inside the container
 WORKDIR /opt/fast-regression
 
-# Copy everything from your Git repo into the container
-COPY . .
+# Copy the app files into the container
+COPY config /opt/fast-regression/config
+COPY feature /opt/fast-regression/feature
+COPY src /opt/fast-regression/src
 
-# Run Maven build and copy dependencies to target/libs
-RUN mvn clean package -DskipTests && \
-    mvn dependency:copy-dependencies -DoutputDirectory=target/libs
+# Copy compiled app and dependencies
+COPY target /opt/fast-regression/target
+COPY target/libs /opt/fast-regression/target/libs
 
-# Optional: give permissions if required by your cluster setup
+# Optional: Give permissions if needed
 RUN chmod -R 777 /opt/fast-regression
 
-# Command to run your Java app
-CMD java -cp "target/libs/*:target/classes" fast.common.run.Executor
-
+# Run the application
+CMD java -cp "target/libs/*:target/*" fast.common.run.Executor
