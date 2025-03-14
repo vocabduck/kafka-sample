@@ -1,20 +1,16 @@
-# Use a JDK 17 runtime base image from your internal registry
 FROM docker-enterprise-prod.artifactrepository.citigroup.net/developersvcs-java/oracle-jdk-rhel8/17e64:latest
 
-# Create working directory inside the container
+# Create working directory
 WORKDIR /opt/fast-regression
 
-# Copy the app files into the container
+# Copy project files
 COPY config /opt/fast-regression/config
 COPY feature /opt/fast-regression/feature
 COPY src /opt/fast-regression/src
-
-# Copy compiled app and dependencies
 COPY target /opt/fast-regression/target
-COPY target/libs /opt/fast-regression/target/libs
 
-# Optional: Give permissions if needed
+# Set permissions
 RUN chmod -R 777 /opt/fast-regression
 
-# Run the application
-CMD java -cp "target/libs/*:target/*" fast.common.run.Executor
+# Safer CMD using absolute path and array form to avoid shell issues
+CMD ["java", "-cp", "/opt/fast-regression/target/libs/*:/opt/fast-regression/target/*", "fast.common.run.Executor"]
