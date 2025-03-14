@@ -14,3 +14,10 @@ RUN chmod -R 777 /opt/fast-regression
 
 # Safer CMD using absolute path and array form to avoid shell issues
 CMD ["java", "-cp", "/opt/fast-regression/target/libs/*:/opt/fast-regression/target/*", "fast.common.run.Executor"]
+
+
+<dependency>
+  <groupId>org.apache.ignite</groupId>
+  <artifactId>ignite-common</artifactId>
+  <version>2.15.0</version>
+</dependency>
