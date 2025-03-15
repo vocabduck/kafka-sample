@@ -24,3 +24,25 @@ CMD ["java", "-cp", "/opt/fast-regression/target/libs/*:/opt/fast-regression/tar
 
 COPY config /opt/fast-regression/config
 COPY FASTEnvSetup /opt/fast-regression/FASTEnvSetup
+
+
+FROM registry.access.redhat.com/ubi8/openjdk-17:1.13
+
+# Create working directory
+RUN mkdir /opt/fast-regression
+
+# Copy required directories and files into the container
+COPY config /opt/fast-regression/config
+COPY feature /opt/fast-regression/feature
+COPY src /opt/fast-regression/src
+COPY target /opt/fast-regression/target
+
+# Set working directory
+WORKDIR /opt/fast-regression
+
+# JVM arguments to fix Ignite initialization error
+ENV JAVA_OPTS="--add-opens java.base/java.nio=ALL-UNNAMED"
+
+# Run the application with the JVM args
+CMD java $JAVA_OPTS -cp "target/libs/*:target/*" fast.common.run.Executor
+
