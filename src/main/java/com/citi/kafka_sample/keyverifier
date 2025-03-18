@@ -1,0 +1,149 @@
+package ssh;
+
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
+import org.bouncycastle.util.io.pem.PemReader;
+
+import java.io.*;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.*;
+import java.security.spec.RSAPrivateCrtKeySpec;
+import java.security.spec.RSAPublicKeySpec;
+import java.util.Base64;
+
+public class RSAKeyUtils {
+
+    public static void main(String[] args) {
+        try {
+            // File paths (change accordingly)
+            String privateKeyPath = "C:/Users/natam/OneDrive/Desktop/ssh/id_rsa_test";
+            String publicKeyPath = "C:/Users/natam/OneDrive/Desktop/ssh/id_rsa_test.pub";
+
+            // Load the private key
+            PrivateKey privateKey = loadPKCS1PrivateKey(privateKeyPath);
+
+            // Derive public key from the private key
+            PublicKey derivedPublicKey = derivePublicKey(privateKey);
+
+            // Read original public key file and extract comment
+            String originalPublicKeyLine = readFirstLine(publicKeyPath);
+            String[] parts = originalPublicKeyLine.trim().split("\\s+");
+
+            if (parts.length < 2 || !parts[0].equals("ssh-rsa")) {
+                throw new IllegalArgumentException("Invalid OpenSSH public key format.");
+            }
+
+            String originalBase64Key = parts[1];
+            String comment = parts.length > 2 ? parts[2] : "";
+
+            // Generate the OpenSSH formatted public key from derived public key
+            String derivedOpenSSHKey = convertToOpenSSHPublicKey(derivedPublicKey, comment);
+
+            System.out.println("Original Public Key from File:\n" + originalPublicKeyLine);
+            System.out.println("\nDerived OpenSSH Public Key:\n" + derivedOpenSSHKey);
+
+            // Compare both keys
+            boolean areKeysEqual = originalPublicKeyLine.equals(derivedOpenSSHKey);
+
+            System.out.println("\nAre both public keys identical? " + areKeysEqual);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Load PKCS#1 private key from PEM file
+    public static PrivateKey loadPKCS1PrivateKey(String filePath) throws Exception {
+        PemReader pemReader = new PemReader(new FileReader(filePath));
+        byte[] pemContent = pemReader.readPemObject().getContent();
+        pemReader.close();
+
+        ASN1Sequence sequence = ASN1Sequence.getInstance(pemContent);
+        RSAPrivateKey rsaPrivateKey = RSAPrivateKey.getInstance(sequence);
+
+        RSAPrivateCrtKeySpec keySpec = new RSAPrivateCrtKeySpec(
+                rsaPrivateKey.getModulus(),
+                rsaPrivateKey.getPublicExponent(),
+                rsaPrivateKey.getPrivateExponent(),
+                rsaPrivateKey.getPrime1(),
+                rsaPrivateKey.getPrime2(),
+                rsaPrivateKey.getExponent1(),
+                rsaPrivateKey.getExponent2(),
+                rsaPrivateKey.getCoefficient()
+        );
+
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePrivate(keySpec);
+    }
+
+    // Derive PublicKey from PrivateKey
+    public static PublicKey derivePublicKey(PrivateKey privateKey) throws Exception {
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        RSAPrivateCrtKeySpec privateSpec = keyFactory.getKeySpec(privateKey, RSAPrivateCrtKeySpec.class);
+
+        RSAPublicKeySpec publicSpec = new RSAPublicKeySpec(
+                privateSpec.getModulus(),
+                privateSpec.getPublicExponent()
+        );
+
+        return keyFactory.generatePublic(publicSpec);
+    }
+
+    // Convert PublicKey to OpenSSH public key format
+    public static String convertToOpenSSHPublicKey(PublicKey publicKey, String comment) throws Exception {
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        RSAPublicKeySpec publicSpec = keyFactory.getKeySpec(publicKey, RSAPublicKeySpec.class);
+
+        BigInteger exponent = publicSpec.getPublicExponent();
+        BigInteger modulus = publicSpec.getModulus();
+
+        ByteArrayOutputStream byteOs = new ByteArrayOutputStream();
+
+        writeString(byteOs, "ssh-rsa");
+        writeBigInt(byteOs, exponent);
+        writeBigInt(byteOs, modulus);
+
+        String base64EncodedKey = Base64.getEncoder().encodeToString(byteOs.toByteArray());
+
+        return String.format("ssh-rsa %s %s", base64EncodedKey, comment);
+    }
+
+    // Helper: Write a string with length prefix
+    private static void writeString(ByteArrayOutputStream os, String value) throws IOException {
+        byte[] bytes = value.getBytes("UTF-8");
+        writeInt(os, bytes.length);
+        os.write(bytes);
+    }
+
+    // Helper: Write BigInteger with length prefix
+    private static void writeBigInt(ByteArrayOutputStream os, BigInteger value) throws IOException {
+        byte[] bytes = value.toByteArray();
+
+        // If the first byte is zero (sign byte), but the second byte has the most significant bit NOT set,
+        // keep the zero. Otherwise, strip it.
+        if (bytes[0] == 0x00 && (bytes.length > 1 && (bytes[1] & 0x80) == 0)) {
+            byte[] tmp = new byte[bytes.length - 1];
+            System.arraycopy(bytes, 1, tmp, 0, tmp.length);
+            bytes = tmp;
+        }
+
+        writeInt(os, bytes.length);
+        os.write(bytes);
+    }
+
+
+    // Helper: Write int as 4 bytes
+    private static void writeInt(ByteArrayOutputStream os, int value) throws IOException {
+        os.write((value >> 24) & 0xFF);
+        os.write((value >> 16) & 0xFF);
+        os.write((value >> 8) & 0xFF);
+        os.write(value & 0xFF);
+    }
+
+    // Helper: Read the first line of a text file
+    private static String readFirstLine(String filePath) throws IOException {
+        return Files.readAllLines(Paths.get(filePath)).get(0);
+    }
+}
