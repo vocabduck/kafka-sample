@@ -1,56 +1,22 @@
 #!/bin/bash
 
-# API Endpoints
-AUTH_URL="https://referencedatacloudauth.sit.icg.citigroup.net/auth/token?grant_type=password"
-DOWNLOAD_URL="https://sit.referencecatalog.snapshots.icg.citigroup.net/snapshots/datastandards/globalorganizationcode/FullDump/latest"
+runAsUser=${USER_NAME}
 
-# Credentials
-USERNAME="ictr_179819"
-PASSWORD="ictr_179819"
-AUTH_HEADER="Basic Y2xvdWQtYXBpOg=="  # Update if needed
-
-# Fetch authentication token
-echo "Fetching authentication token..."
-TOKEN_RESPONSE=$(curl -s -X POST "$AUTH_URL" \
-    --data "username=$USERNAME&password=$PASSWORD" \
-    --header "Authorization: $AUTH_HEADER" | tr -d '\n' | tr -d ' ')
-
-# Debugging: Print Raw Response
-echo "Raw Token Response: $TOKEN_RESPONSE"
-
-# Check if response is empty
-if [[ -z "$TOKEN_RESPONSE" ]]; then
-    echo "Error: No response from authentication server."
-    exit 1
+if ! whoami &> /dev/null; then
+  if [ -w /etc/passwd ]; then
+    echo "${USER_NAME:-default}:x:$(id -u):0:${USER_NAME:-default} user:/home/${USER_NAME}:/bin/bash" >> /etc/passwd
+  fi
 fi
 
-# Extract token using awk (instead of grep or sed)
-ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | awk -F'"' '{for(i=1;i<=NF;i++){if($i=="access_token"){print $(i+2)}}}')
+# Initialize before starting the service
+echo "Running /app/init-script.ksh..."
+/app/init-script.ksh
+status=$?
 
-# Check if token was received
-if [[ -z "$ACCESS_TOKEN" || "$ACCESS_TOKEN" == "null" ]]; then
-    echo "Failed to fetch authentication token. Response: $TOKEN_RESPONSE"
-    exit 1
+if [ $status -ne 0 ]; then
+  echo "Init script failed. Exit code: $status"
+  exit $status
 fi
 
-echo "Token fetched successfully: $ACCESS_TOKEN"
-
-# Set output filenames
-OUTPUT_FILE="globalorganizationcode-latest.gz"
-HEADER_FILE="globalorganizationcode-header.txt"
-
-# Download file using the retrieved token
-echo "Downloading file..."
-curl -k -o "$OUTPUT_FILE" \
-     -H "Authorization: Bearer $ACCESS_TOKEN" \
-     -w "\nResponse code:%{http_code}" \
-     --dump-header "$HEADER_FILE" \
-     "$DOWNLOAD_URL"
-
-# Verify download success
-if [[ -f "$OUTPUT_FILE" ]]; then
-    echo "Download complete: $OUTPUT_FILE"
-else
-    echo "Download failed."
-    exit 1
-fi
+echo "Starting sshd..."
+exec /usr/sbin/sshd -D -e -f /etc/ssh/sshd_config
