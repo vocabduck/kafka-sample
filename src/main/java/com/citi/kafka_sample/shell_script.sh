@@ -8,15 +8,16 @@ if ! whoami &> /dev/null; then
   fi
 fi
 
-# Initialize before starting the service
-echo "Running /app/init-script.ksh..."
-/app/init-script.ksh
-status=$?
+# Step 1: Run the init script
+echo "Running init-script.ksh..."
+/export/app/${COMPONENT_NAME}/init-script.ksh
+init_exit_code=$?
 
-if [ $status -ne 0 ]; then
-  echo "Init script failed. Exit code: $status"
-  exit $status
+if [ $init_exit_code -ne 0 ]; then
+  echo "init-script.ksh failed with exit code $init_exit_code"
+  exit $init_exit_code
 fi
 
+# Step 2: Start SSHD as PID 1
 echo "Starting sshd..."
 exec /usr/sbin/sshd -D -e -f /etc/ssh/sshd_config
