@@ -1,0 +1,12 @@
+public static PrivateKey loadPKCS8PrivateKey(String filePath) throws Exception {
+    byte[] keyBytes = Files.readAllBytes(Paths.get(filePath));
+    String pem = new String(keyBytes, StandardCharsets.UTF_8);
+    pem = pem.replace("-----BEGIN PRIVATE KEY-----", "")
+             .replace("-----END PRIVATE KEY-----", "")
+             .replaceAll("\\s", "");
+    byte[] decoded = Base64.getDecoder().decode(pem);
+
+    PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
+    KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+    return keyFactory.generatePrivate(keySpec);
+}
