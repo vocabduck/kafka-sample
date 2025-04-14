@@ -1,0 +1,39 @@
+@Override
+@Transactional
+public void write(Chunk<? extends DimAccount> chunk) throws Exception {
+    try {
+        TimerUtil timer = new TimerUtil();
+        timer.start();
+
+        dimAccountRepository.saveAll(chunk);
+
+        List<BigDecimal> actiList = chunk.getItems().stream()
+            .map(DimAccount::getActi)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
+        if (!actiList.isEmpty()) {
+            esalesISGDataRepository.markAsProcessedByActiList(
+                actiList.stream().map(BigDecimal::longValue).collect(Collectors.toList())
+            );
+        }
+
+        timer.stop();
+        System.out.println("Time taken for Writer: " + timer.getElapsedTime() + " milliseconds");
+
+    } catch (Exception e) {
+        throw new BatchProcessorException("Error saving the result", HttpStatus.BAD_REQUEST);
+    }
+}
+
+@Modifying
+@Transactional
+@Query("UPDATE EsalesData e SET e.isProcessed = 'T' WHERE e.isProcessed = 'F' AND e.acti IN :actiList")
+void markAsProcessedByActiList(@Param("actiList") List<Long> actiList);
+
+
+CREATE INDEX IDX_ESALES_PROC_ACTI ON REFACCOUNTTB (IS_PROCESSED, ACTI);
+
+
+How to Explain It (in meetings/docs):
+We chose to use IN (:actiList) for post-write updates because it's ideal for our chunk-based processing. It allows bulk updates of recently processed rows in a single statement, avoiding per-record updates. Combined with a composite index on (IS_PROCESSED, ACTI), this ensures both read and update operations use efficient index range scans, not full scans. The IN clause size is bounded by our chunk size (~300–500), making it safe and performant.
