@@ -32,3 +32,34 @@ public Step updateRefIsProcessedStep(JobRepository jobRepository,
             .tasklet(updateRefTableTasklet, transactionManager)
             .build();
 }
+
+
+@Transactional
+@Modifying
+@Query(value = """
+    UPDATE SMC_PRODUCT p
+    SET p.IS_PROCESSED = 'T'
+    WHERE p.IS_PROCESSED = 'F'
+    AND EXISTS (
+        SELECT 1 FROM SMC_CONTRACT c
+        WHERE c.SMC_PRODUCT_ID = p.SMC_PRODUCT_ID
+        AND c.IS_PROCESSED = 'F'
+    )
+""", nativeQuery = true)
+int markAllPendingProductAsProcessed();
+
+
+@Transactional
+@Modifying
+@Query(value = """
+    UPDATE SMC_CONTRACT c
+    SET c.IS_PROCESSED = 'T'
+    WHERE c.IS_PROCESSED = 'F'
+    AND EXISTS (
+        SELECT 1 FROM SMC_PRODUCT p
+        WHERE p.SMC_PRODUCT_ID = c.SMC_PRODUCT_ID
+        AND p.IS_PROCESSED = 'F'
+    )
+""", nativeQuery = true)
+int markAllPendingContractAsProcessed();
+
