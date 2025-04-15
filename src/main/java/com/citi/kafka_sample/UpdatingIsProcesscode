@@ -1,50 +1,34 @@
-@Bean(name = "refToDimAccLoadJob")
-public Job refToDimAccLoadJob(
-        @Qualifier("refToDimAccLoadStep") Step refToDimAccLoadStep,
-        @Qualifier("updateIsProcessedStep") Step updateIsProcessedStep,
-        JobRepository jobRepository) {
-    return new JobBuilder("refToDimAccLoadJob", jobRepository)
-            .start(refToDimAccLoadStep)
-            .next(updateIsProcessedStep) // Step 2 added
-            .listener(jobFailureListener)
-            .build();
-}
+@Component
+@StepScope
+public class UpdateRefTableTasklet implements Tasklet {
 
-@Bean(name = "updateIsProcessedStep")
-public Step updateIsProcessedStep(JobRepository jobRepository,
-                                  PlatformTransactionManager transactionManager,
-                                  EsalesDataReader reader,
-                                  EsalesDataProcessor processor,
-                                  EsalesDataWriter writer) {
-
-    return new StepBuilder("updateIsProcessedStep", jobRepository)
-            .<EsalesData, EsalesData>chunk(500, transactionManager)
-            .reader(reader)
-            .processor(processor)
-            .writer(writer)
-            .build();
-}
-
-public interface EsalesDataReader extends PagingAndSortingRepository<EsalesData, Long> {
-    @Query("SELECT e FROM EsalesData e WHERE e.isProcessed = 'F'")
-    Page<EsalesData> findByUnprocessed(Pageable pageable);
-}
-
-public class EsalesDataProcessor implements ItemProcessor<EsalesData, EsalesData> {
-    @Override
-    public EsalesData process(EsalesData item) {
-        item.setIsProcessed("T");
-        return item;
-    }
-}
-
-
-public class EsalesDataWriter implements ItemWriter<EsalesData> {
     @Autowired
-    private EsalesISGDataRepository repo;
+    private EsalesISGDataRepository esalesISGDataRepository;
 
     @Override
-    public void write(Chunk<? extends EsalesData> items) {
-        repo.saveAll(items);
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
+
+        int updatedCount = esalesISGDataRepository.markAllPendingAsProcessed(); // returns updated row count if defined that way
+
+        System.out.println("Updated " + updatedCount + " rows to isProcessed = 'T'");
+
+        return RepeatStatus.FINISHED;
     }
+}
+@Transactional
+@Modifying
+@Query("UPDATE EsalesData e SET e.isProcessed = 'T' WHERE e.isProcessed = 'F'")
+int markAllPendingAsProcessed();  // returns row count
+
+
+@Bean(name = "updateRefIsProcessedStep")
+public Step updateRefIsProcessedStep(JobRepository jobRepository,
+                                     PlatformTransactionManager transactionManager,
+                                     UpdateRefTableTasklet updateRefTableTasklet) {
+
+    StepBuilder builder = new StepBuilder("updateRefIsProcessedStep", jobRepository);
+
+    return builder
+            .tasklet(updateRefTableTasklet, transactionManager)
+            .build();
 }
