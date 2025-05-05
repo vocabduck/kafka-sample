@@ -1,105 +1,86 @@
-public class EsalesDBServiceImpl implements EsalesDBService {
+@Transactional
+public void persist(List<EsalesGoldDto> esalesGoldDtoList) {
+    if (esalesGoldDtoList == null || esalesGoldDtoList.isEmpty()) return;
 
-    private static final Logger logger = LoggerFactory.getLogger(EsalesDBServiceImpl.class);
+    List<EsalesData> toAdd = new ArrayList<>();
+    List<EsalesData> toDelete = new ArrayList<>();
+    List<EsalesDataArchive> toArchive = new ArrayList<>();
 
-    @Autowired
-    private final EsalesISGDataRepository esalesISGDataRepository;
+    Map<EsalesDataKey, EsalesGoldDto> dtoMap = new HashMap<>();
 
-    @Autowired
-    private final EsalesISGDataArchiveRepository esalesISGDataArchiveRepository;
-
-    @Autowired
-    private final DimAccountService dimAccountService;
-
-    public EsalesDBServiceImpl(EsalesISGDataRepository esalesISGDataRepository,
-                               EsalesISGDataArchiveRepository esalesISGDataArchiveRepository) {
-        this.esalesISGDataRepository = esalesISGDataRepository;
-        this.esalesISGDataArchiveRepository = esalesISGDataArchiveRepository;
+    for (EsalesGoldDto dto : esalesGoldDtoList) {
+        if (dto != null && dto.getMnemonic() != null && dto.getGfcid() != null && dto.getActi() != null) {
+            EsalesDataKey key = new EsalesDataKey(dto.getMnemonic(), dto.getGfcid(), dto.getActi());
+            dtoMap.put(key, dto);
+        }
     }
 
-    @Transactional
-    public void persist(List<EsalesGoldDto> esalesGoldDtoList) {
-        if (esalesGoldDtoList == null || esalesGoldDtoList.isEmpty()) return;
+    if (dtoMap.isEmpty()) return;
 
-        List<EsalesData> toAdd = new ArrayList<>();
-        List<EsalesData> toDelete = new ArrayList<>();
-        List<EsalesDataArchive> toArchive = new ArrayList<>();
+    List<EsalesDataKey> keys = new ArrayList<>(dtoMap.keySet());
+    List<EsalesData> existingRecords = esalesISGDataRepository.findAllById(keys);
+    Set<EsalesDataKey> existingKeys = existingRecords.stream()
+        .map(EsalesData::getEsalesDataKey)
+        .collect(Collectors.toSet());
 
-        Map<String, EsalesGoldDto> dtoMap = new HashMap<>();
+    String user = System.getProperty("user.name", "system");
+    LocalDateTime now = LocalDateTime.now();
 
-        for (EsalesGoldDto dto : esalesGoldDtoList) {
-            if (dto != null && dto.getMnemonic() != null) {
-                dtoMap.put(dto.getMnemonic(), dto);
-            }
+    for (Map.Entry<EsalesDataKey, EsalesGoldDto> entry : dtoMap.entrySet()) {
+        EsalesDataKey key = entry.getKey();
+        EsalesGoldDto dto = entry.getValue();
+
+        EsalesData entity = amcGoldDtoMapper.INSTANCE.toEntity(dto);
+
+        if (existingKeys.contains(key)) {
+            Optional<EsalesData> original = existingRecords.stream()
+                .filter(d -> d.getEsalesDataKey().equals(key))
+                .findFirst();
+
+            original.ifPresent(orig -> {
+                EsalesDataArchive archive = amcGoldDtoToArchiveMapper.INSTANCE.toEntity(orig);
+                toArchive.add(archive);
+                toDelete.add(orig);
+
+                entity.setCreatedBy(orig.getCreatedBy());
+                entity.setCreatedDDT(orig.getCreatedDDT());
+            });
+        } else {
+            entity.setCreatedBy(user);
+            entity.setCreatedDDT(now);
         }
 
-        if (dtoMap.isEmpty()) return;
+        entity.setModifiedBy(user);
+        entity.setModifiedDDT(now);
+        toAdd.add(entity);
+    }
 
-        List<String> mnemonics = new ArrayList<>(dtoMap.keySet());
-        List<EsalesData> existingData = esalesISGDataRepository.findByEsalesDataKeyAccountMnemonic(mnemonics);
-        Set<String> existingIds = existingData.stream()
-                .map(data -> data.getEsalesDataKey().getMnemonic())
-                .collect(Collectors.toSet());
-
-        String user = System.getProperty("user.name", "system");
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-
-        for (Map.Entry<String, EsalesGoldDto> entry : dtoMap.entrySet()) {
-            String mnemonic = entry.getKey();
-            EsalesGoldDto dto = entry.getValue();
-
-            EsalesData entity = AMCGoldDtoMapper.INSTANCE.toEntity(dto);
-
-            if (existingIds.contains(mnemonic)) {
-                Optional<EsalesData> existing = existingData.stream()
-                        .filter(e -> mnemonic.equals(e.getEsalesDataKey().getMnemonic()))
-                        .findFirst();
-
-                existing.ifPresent(orig -> {
-                    EsalesDataArchive archive = AMCGoldDtoToArchiveMapper.INSTANCE.toEntity(orig);
-                    toArchive.add(archive);
-                    toDelete.add(orig);
-
-                    entity.setCreatedBy(orig.getCreatedBy());
-                    entity.setCreatedDDT(orig.getCreatedDDT());
-                });
-            } else {
-                entity.setCreatedBy(user);
-                entity.setCreatedDDT(now);
-            }
-
-            entity.setModifiedBy(user);
-            entity.setModifiedDDT(now);
-            toAdd.add(entity);
+    try {
+        if (!toArchive.isEmpty()) {
+            List<EsalesDataArchive> archived = esalesISGDataArchiveRepository.saveAll(toArchive);
+            logger.info("{} REF Account Archive records saved.", archived.size());
+        } else {
+            logger.info("No REF Account Archive data to save.");
         }
 
-        try {
-            if (!toArchive.isEmpty()) {
-                List<EsalesDataArchive> archived = esalesISGDataArchiveRepository.saveAll(toArchive);
-                logger.info("{} REF Account Archive records saved.", archived.size());
-            } else {
-                logger.info("No REF Account Archive data to save.");
-            }
-
-            if (!toDelete.isEmpty()) {
-                esalesISGDataRepository.deleteAll(toDelete);
-                logger.info("{} REF Account records deleted.", toDelete.size());
-            } else {
-                logger.info("No REF Account records to delete.");
-            }
-
-            if (!toAdd.isEmpty()) {
-                List<EsalesData> added = esalesISGDataRepository.saveAll(toAdd);
-                logger.info("{} REF Account records saved.", added.size());
-            } else {
-                logger.info("No REF Account records to add.");
-            }
-
-            dimAccountService.persistAccounts(toAdd);
-
-        } catch (DataAccessException e) {
-            logger.error("Saving REF_AMC_ACCOUNT and REF_AMC_ACCOUNT_ARCHIVE failed.", e);
-            // TODO: Handle retry logic if required
+        if (!toDelete.isEmpty()) {
+            esalesISGDataRepository.deleteAll(toDelete);
+            logger.info("{} REF Account records deleted.", toDelete.size());
+        } else {
+            logger.info("No REF Account records to delete.");
         }
+
+        if (!toAdd.isEmpty()) {
+            List<EsalesData> added = esalesISGDataRepository.saveAll(toAdd);
+            logger.info("{} REF Account records saved.", added.size());
+        } else {
+            logger.info("No REF Account records to add.");
+        }
+
+        dimAccountService.persistAccounts(toAdd);
+
+    } catch (DataAccessException e) {
+        logger.error("Saving REF_AMC_ACCOUNT and archives failed.", e);
+        // TODO: Add retry logic
     }
 }
