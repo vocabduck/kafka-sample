@@ -1,83 +1,105 @@
-@Transactional
-public void persist(List<SMCGoldDto> smcGoldDtoList) {
-    List<SMCProduct> smcProductListToAdd = new ArrayList<>();
-    List<SMCProduct> smcProductListToDelete = new ArrayList<>();
-    List<SMCProductArchive> smcProductArcListToAdd = new ArrayList<>();
+@Service
+public class SMCDBProductServiceImpl implements SMCDBProductService {
 
-    Set<String> incomingProductIds = smcGoldDtoList.stream()
-        .filter(Objects::nonNull)
-        .map(dto -> dto.getProductSMCP().get(0).getSmcp())
-        .filter(Objects::nonNull)
-        .collect(Collectors.toSet());
+    private static final Logger logger = LoggerFactory.getLogger(SMCDBProductServiceImpl.class);
 
-    // Bulk fetch from DB
-    List<SMCProduct> existingProducts = smcProductRepository.findBySmcProductIdIn(incomingProductIds);
-    Map<String, SMCProduct> existingProductMap = existingProducts.stream()
-        .collect(Collectors.toMap(SMCProduct::getSmcProductId, p -> p));
+    @Autowired
+    private final SMCProductRepository smcProductRepository;
 
-    String userName = System.getProperty("user.name");
+    @Autowired
+    private final SMCProductArchiveRepository smcProductArchiveRepository;
 
-    for (SMCGoldDto dto : smcGoldDtoList) {
-        if (dto == null || dto.getProductSMCP() == null || dto.getProductSMCP().isEmpty()) continue;
+    @Autowired
+    private final DimContractService dimContractService;
 
-        String smcProductId = dto.getProductSMCP().get(0).getSmcp();
-        boolean isProductType = "PRODUCT".equals(dto.getExchangeListingInfo().get(0).getInstrumentListingLevel());
-
-        if (smcProductId == null || !isProductType) continue;
-
-        SMCProduct smcProduct = smcGoldDtoToProductMapper.INSTANCE.toSmcProduct(dto);
-
-        if (existingProductMap.containsKey(smcProductId)) {
-            SMCProduct existing = existingProductMap.get(smcProductId);
-
-            // Archive old
-            SMCProductArchive archive = smcGoldDtoToArchiveMapper.INSTANCE.toSmcProduct(existing);
-            smcProductArcListToAdd.add(archive);
-
-            smcProduct.setCreatedBy(existing.getCreatedBy());
-            smcProduct.setCreatedDTT(existing.getCreatedDTT());
-            smcProduct.setModifiedBy(userName);
-            smcProduct.setModifiedDTT(Timestamp.valueOf(LocalDateTime.now()));
-
-            smcProductListToDelete.add(existing);
-        } else {
-            smcProduct.setCreatedBy(userName);
-            smcProduct.setCreatedDTT(Timestamp.valueOf(LocalDateTime.now()));
-        }
-
-        smcProductListToAdd.add(smcProduct);
+    public SMCDBProductServiceImpl(SMCProductRepository smcProductRepository, SMCProductArchiveRepository smcProductArchiveRepository) {
+        this.smcProductRepository = smcProductRepository;
+        this.smcProductArchiveRepository = smcProductArchiveRepository;
     }
 
-    try {
-        // Save archives
-        if (!smcProductArcListToAdd.isEmpty()) {
-            smcProductArchiveRepository.saveAll(smcProductArcListToAdd);
-            logger.info("{} REF Product Archive data saved", smcProductArcListToAdd.size());
-        } else {
-            logger.info("No REF Product Archive data to save");
+    @Transactional
+    public void persist(List<SMCGoldDto> smcGoldDtoList) {
+        if (smcGoldDtoList == null || smcGoldDtoList.isEmpty()) return;
+
+        List<SMCProduct> toAdd = new ArrayList<>();
+        List<SMCProduct> toDelete = new ArrayList<>();
+        List<SMCProductArchive> toArchive = new ArrayList<>();
+
+        Map<String, SMCGoldDto> dtoMap = new HashMap<>();
+
+        // Prepare input DTO map
+        for (SMCGoldDto dto : smcGoldDtoList) {
+            if (dto != null && dto.getProductSMCP() != null && !dto.getProductSMCP().isEmpty()) {
+                String productId = dto.getProductSMCP().get(0).getSmcp();
+                boolean isProduct = "PRODUCT".equals(dto.getExchangeListingInfo().get(0).getInstrumentListingLevel());
+                if (productId != null && isProduct) {
+                    dtoMap.put(productId, dto);
+                }
+            }
         }
 
-        // Delete old records
-        if (!smcProductListToDelete.isEmpty()) {
-            smcProductRepository.deleteAll(smcProductListToDelete);
-            logger.info("{} REF Product records deleted", smcProductListToDelete.size());
-        } else {
-            logger.info("No REF Product records to delete");
+        if (dtoMap.isEmpty()) return;
+
+        List<String> productIds = new ArrayList<>(dtoMap.keySet());
+        List<SMCProduct> existingProducts = smcProductRepository.findBySmcpProductIds(productIds);
+        Map<String, SMCProduct> existingMap = existingProducts.stream()
+                .collect(Collectors.toMap(SMCProduct::getSmcpProductId, Function.identity()));
+
+        String user = System.getProperty("user.name", "system");
+        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+
+        for (Map.Entry<String, SMCGoldDto> entry : dtoMap.entrySet()) {
+            String productId = entry.getKey();
+            SMCGoldDto dto = entry.getValue();
+
+            SMCProduct newProduct = smcProductGoldDtoMapper.INSTANCE.toSmcProduct(dto);
+
+            if (existingMap.containsKey(productId)) {
+                SMCProduct existing = existingMap.get(productId);
+
+                SMCProductArchive archive = smcProductGoldDtoToArchiveMapper.INSTANCE.toSmcProduct(existing);
+                toArchive.add(archive);
+                toDelete.add(existing);
+
+                newProduct.setCreatedBy(existing.getCreatedBy());
+                newProduct.setCreatedDTT(existing.getCreatedDTT());
+            } else {
+                newProduct.setCreatedBy(user);
+                newProduct.setCreatedDTT(now);
+            }
+
+            newProduct.setModifiedBy(user);
+            newProduct.setModifiedDTT(now);
+            toAdd.add(newProduct);
         }
 
-        // Save new/updated records
-        if (!smcProductListToAdd.isEmpty()) {
-            smcProductRepository.saveAll(smcProductListToAdd);
-            logger.info("{} REF Product records inserted/updated", smcProductListToAdd.size());
-        } else {
-            logger.info("No REF Product records to save");
+        try {
+            if (!toArchive.isEmpty()) {
+                List<SMCProductArchive> archived = smcProductArchiveRepository.saveAll(toArchive);
+                logger.info("{} REF Product Archive records saved.", archived.size());
+            } else {
+                logger.info("No REF Product Archive data to save.");
+            }
+
+            if (!toDelete.isEmpty()) {
+                smcProductRepository.deleteAll(toDelete);
+                logger.info("{} REF Product records deleted.", toDelete.size());
+            } else {
+                logger.info("No REF Product records to delete.");
+            }
+
+            if (!toAdd.isEmpty()) {
+                List<SMCProduct> added = smcProductRepository.saveAll(toAdd);
+                logger.info("{} REF Product records saved.", added.size());
+            } else {
+                logger.info("No REF Product records to add.");
+            }
+
+            dimContractService.persistProducts(toAdd);
+
+        } catch (DataAccessException e) {
+            logger.error("Saving REF_SMC_PRODUCT and archives failed.", e);
+            // TODO: Add retry handling
         }
-
-        // Persist to downstream (if needed)
-        dimContractService.persistProducts(smcProductListToAdd);
-
-    } catch (DataAccessException dae) {
-        logger.error("Saving REF_SMC_PRODUCT_TB failed", dae);
-        // TODO: Retry logic
     }
 }
