@@ -1,0 +1,109 @@
+SMCPContractImp
+
+public class SMCDBContractServiceImpl implements SMCDBContractService {
+
+    private static final Logger logger = LoggerFactory.getLogger(SMCDBContractServiceImpl.class);
+
+    @Autowired
+    private final SMCContractRepository smcContractRepository;
+
+    @Autowired
+    private final SMCContractArchiveRepository smcContractArchiveRepository;
+
+    @Autowired
+    private final DimContractService dimContractService;
+
+    public SMCDBContractServiceImpl(SMCContractRepository smcContractRepository, SMCContractArchiveRepository smcContractArchiveRepository) {
+        this.smcContractRepository = smcContractRepository;
+        this.smcContractArchiveRepository = smcContractArchiveRepository;
+    }
+
+    @Transactional
+    public void persist(List<SMCGoldDto> smcGoldDtoList) {
+        if (smcGoldDtoList == null || smcGoldDtoList.isEmpty()) return;
+
+        List<SMCContract> toAdd = new ArrayList<>();
+        List<SMCContract> toDelete = new ArrayList<>();
+        List<SMCContractArchive> toArchive = new ArrayList<>();
+
+        Map<String, SMCGoldDto> dtoMap = new HashMap<>();
+
+        // Prepare input DTO map
+        for (SMCGoldDto dto : smcGoldDtoList) {
+            if (dto != null && dto.getProductSMCP() != null && !dto.getProductSMCP().isEmpty()) {
+                String contractId = dto.getProductSMCP().get(0).getSmcp();
+                boolean isContract = "CONTRACT".equals(dto.getExchangeListingInfo().get(0).getInstrumentListingLevel());
+                if (contractId != null && isContract) {
+                    dtoMap.put(contractId, dto);
+                }
+            }
+        }
+
+        if (dtoMap.isEmpty()) return;
+
+        List<String> contractIds = new ArrayList<>(dtoMap.keySet());
+        List<SMCContract> existingContracts = smcContractRepository.findBySmcpContractIds(contractIds);
+        Set<String> existingIds = existingContracts.stream().map(SMCContract::getSmcpContractId).collect(Collectors.toSet());
+
+        String user = System.getProperty("user.name", "system");
+        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+
+        for (Map.Entry<String, SMCGoldDto> entry : dtoMap.entrySet()) {
+            String contractId = entry.getKey();
+            SMCGoldDto dto = entry.getValue();
+
+            SMCContract newContract = smcContractGoldDtoMapper.INSTANCE.toSmcContract(dto);
+
+            if (existingIds.contains(contractId)) {
+                Optional<SMCContract> existing = existingContracts.stream()
+                        .filter(c -> c.getSmcpContractId().equals(contractId))
+                        .findFirst();
+
+                existing.ifPresent(orig -> {
+                    SMCContractArchive archive = smcContractGoldDtoToArchiveMapper.INSTANCE.toSmcContract(orig);
+                    toArchive.add(archive);
+                    toDelete.add(orig);
+
+                    newContract.setCreatedBy(orig.getCreatedBy());
+                    newContract.setCreatedDDT(orig.getCreatedDDT());
+                });
+            } else {
+                newContract.setCreatedBy(user);
+                newContract.setCreatedDDT(now);
+            }
+
+            newContract.setModifiedBy(user);
+            newContract.setModifiedDDT(now);
+            toAdd.add(newContract);
+        }
+
+        try {
+            if (!toArchive.isEmpty()) {
+                List<SMCContractArchive> archived = smcContractArchiveRepository.saveAll(toArchive);
+                logger.info("{} REF Contract Archive records saved.", archived.size());
+            } else {
+                logger.info("No REF Contract Archive data to save.");
+            }
+
+            if (!toDelete.isEmpty()) {
+                smcContractRepository.deleteAll(toDelete);
+                logger.info("{} REF Contract records deleted.", toDelete.size());
+            } else {
+                logger.info("No REF Contract records to delete.");
+            }
+
+            if (!toAdd.isEmpty()) {
+                List<SMCContract> added = smcContractRepository.saveAll(toAdd);
+                logger.info("{} REF Contract records saved.", added.size());
+            } else {
+                logger.info("No REF Contract records to add.");
+            }
+
+            dimContractService.persistContracts(toAdd);
+
+        } catch (DataAccessException e) {
+            logger.error("Saving REF_SMC_CONTRACT and archives failed.", e);
+            // TODO: Add retry handling
+        }
+    }
+}
