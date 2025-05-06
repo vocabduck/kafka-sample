@@ -1,0 +1,17 @@
+public List<RefContractProductDto> fetchRefContractWithProducts(List<String> ids) {
+    List<Object[]> rows = repository.findRawContractProductPairs(ids);
+
+    List<RefContractProductDto> result = new ArrayList<>();
+
+    for (Object[] row : rows) {
+        // Manually map the first part to SMCProduct
+        SMCProduct product = mapRowToSMCProduct(row);
+
+        // Manually map the rest to SMCContract
+        SMCContract contract = mapRowToSMCContract(row);
+
+        result.add(new RefContractProductDto(product, contract));
+    }
+
+    return result;
+}
