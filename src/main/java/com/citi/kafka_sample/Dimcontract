@@ -1,3 +1,6 @@
+@Query("SELECT dc FROM DimContract dc WHERE (dc.smcpContractId, dc.smcpProductId) IN :keys")
+List<DimContract> findByContractIdAndProductIdIn(@Param("keys") List<Pair<String, String>> keys);
+
 private void processDimContract(
         List<DimContract> dimContractsToProcess,
         List<DimContractArchive> dimContractArcListToAdd,
