@@ -1,0 +1,50 @@
+private void processDimContract(
+        List<DimContract> dimContractsToProcess,
+        List<DimContractArchive> dimContractArcListToAdd,
+        List<DimContract> dimContractListToDelete,
+        List<DimContract> dimContractListToAdd) {
+
+    if (dimContractsToProcess == null || dimContractsToProcess.isEmpty()) return;
+
+    // Step 1: Build key list for bulk fetch
+    List<Pair<String, String>> keys = dimContractsToProcess.stream()
+        .map(dc -> Pair.of(dc.getSmcpContractId(), dc.getSmcpProductId()))
+        .collect(Collectors.toList());
+
+    // Step 2: Fetch all existing contracts in one go (you must implement this method)
+    List<DimContract> existing = dimContractRepository.findByContractIdAndProductIdIn(keys);
+
+    // Step 3: Build lookup map
+    Map<String, DimContract> existingMap = existing.stream()
+        .collect(Collectors.toMap(
+            dc -> dc.getSmcpContractId() + "|" + dc.getSmcpProductId(),
+            Function.identity()
+        ));
+
+    String user = System.getProperty("user.name", "system");
+    LocalDate now = LocalDate.now();
+
+    // Step 4: Iterate once with map lookup
+    for (DimContract dimContract : dimContractsToProcess) {
+        if (dimContract == null) continue;
+
+        String key = dimContract.getSmcpContractId() + "|" + dimContract.getSmcpProductId();
+        DimContract previous = existingMap.get(key);
+
+        if (previous != null) {
+            DimContractArchive archive = dimContractToArchiveMapper.INSTANCE.toDimContractArchive(previous);
+            dimContractArcListToAdd.add(archive);
+            dimContractListToDelete.add(previous);
+
+            dimContract.setInsertedBy(previous.getInsertedBy());
+            dimContract.setInsertedDate(previous.getInsertedDate());
+        } else {
+            dimContract.setInsertedBy(user);
+            dimContract.setInsertedDate(now);
+        }
+
+        dimContract.setUpdatedBy(user);
+        dimContract.setUpdatedDate(now);
+        dimContractListToAdd.add(dimContract);
+    }
+}
