@@ -1,0 +1,22 @@
+public List<DimAccount> findByEsalesKeys(List<EsalesDataKey> keys) {
+    if (keys.isEmpty()) return List.of();
+
+    StringBuilder queryBuilder = new StringBuilder("SELECT d FROM DimAccount d WHERE ");
+    for (int i = 0; i < keys.size(); i++) {
+        queryBuilder.append("(d.mnemonic = :mn").append(i)
+            .append(" AND d.gfcid = :gf").append(i)
+            .append(" AND d.acti = :ac").append(i).append(")");
+        if (i != keys.size() - 1) {
+            queryBuilder.append(" OR ");
+        }
+    }
+
+    TypedQuery<DimAccount> query = entityManager.createQuery(queryBuilder.toString(), DimAccount.class);
+    for (int i = 0; i < keys.size(); i++) {
+        query.setParameter("mn" + i, keys.get(i).getMnemonic());
+        query.setParameter("gf" + i, keys.get(i).getGfcid());
+        query.setParameter("ac" + i, keys.get(i).getActi());
+    }
+
+    return query.getResultList();
+}
