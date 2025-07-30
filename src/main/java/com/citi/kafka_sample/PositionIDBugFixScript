@@ -1,0 +1,48 @@
+-- STEP 1: Add new ID column
+ALTER TABLE OLYMPUS_POSITION ADD ID NUMBER(19,0);
+
+-- STEP 2: Populate ID with sequential values based on POSITION_VALUE_TIMESTAMP
+MERGE INTO OLYMPUS_POSITION target
+USING (
+  SELECT ROWID AS rid,
+         ROW_NUMBER() OVER (ORDER BY POSITION_VALUE_TIMESTAMP) AS row_num
+  FROM OLYMPUS_POSITION
+) source
+ON (target.ROWID = source.rid)
+WHEN MATCHED THEN
+  UPDATE SET target.ID = source.row_num;
+
+-- STEP 3: Create sequence starting from MAX(ID) + 1
+DECLARE
+  v_max NUMBER;
+BEGIN
+  SELECT NVL(MAX(ID), 0) + 1 INTO v_max FROM OLYMPUS_POSITION;
+  EXECUTE IMMEDIATE 'CREATE SEQUENCE OLYMPUS_POSITION_SEQ START WITH ' || v_max || ' INCREMENT BY 1';
+END;
+/
+
+-- STEP 4: Create trigger to auto-populate ID on insert
+CREATE OR REPLACE TRIGGER OLYMPUS_POSITION_BI
+BEFORE INSERT ON OLYMPUS_POSITION
+FOR EACH ROW
+WHEN (NEW.ID IS NULL)
+BEGIN
+  SELECT OLYMPUS_POSITION_SEQ.NEXTVAL INTO :NEW.ID FROM dual;
+END;
+/
+
+-- STEP 5: Dynamically find and drop the existing primary key constraint
+DECLARE
+  v_constraint_name VARCHAR2(100);
+BEGIN
+  SELECT constraint_name INTO v_constraint_name
+  FROM user_constraints
+  WHERE table_name = 'OLYMPUS_POSITION'
+    AND constraint_type = 'P';
+
+  EXECUTE IMMEDIATE 'ALTER TABLE OLYMPUS_POSITION DROP CONSTRAINT ' || v_constraint_name;
+END;
+/
+
+-- STEP 6: Set ID as the new primary key
+ALTER TABLE OLYMPUS_POSITION ADD CONSTRAINT PK_OLYMPUS_POSITION_ID PRIMARY KEY (ID);
